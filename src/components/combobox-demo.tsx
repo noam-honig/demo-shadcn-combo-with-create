@@ -21,27 +21,27 @@ import { CommandList } from 'cmdk'
 
 export type ComboBoxItem = { id: string; name: string }
 
-export type ComboBoxDemoProps = {
-  options: ComboBoxItem[]
-  value: string
-  setValue: React.Dispatch<React.SetStateAction<string>>
+export type ComboBoxDemoProps<itemType extends ComboBoxItem> = {
+  options: itemType[]
+  value: itemType | undefined
+  setValue: React.Dispatch<React.SetStateAction<itemType | undefined>>
   caption: string
-  onAdd?: (name: string) => Promise<ComboBoxItem>
+  onAdd?: (name: string) => Promise<itemType>
 }
 
-export function ComboboxDemo({
+export function ComboboxDemo<itemType extends ComboBoxItem>({
   options,
   value,
   setValue,
   caption,
   onAdd,
-}: ComboBoxDemoProps) {
+}: ComboBoxDemoProps<itemType>) {
   const [open, setOpen] = React.useState(false)
   const [searchValue, setSearchValue] = React.useState('')
   async function addOption() {
     if (!onAdd) return
     const newOption = await onAdd(searchValue)
-    setValue(newOption.id)
+    setValue(newOption)
     setSearchValue('')
     setOpen(false)
   }
@@ -55,9 +55,7 @@ export function ComboboxDemo({
           aria-expanded={open}
           className="w-[200px] justify-between"
         >
-          {value
-            ? options.find((option) => option.id === value)?.name
-            : `Select ${caption}...`}
+          {value ? value?.name : `Select ${caption}...`}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -77,15 +75,18 @@ export function ComboboxDemo({
                 <CommandItem
                   key={option.id}
                   value={option.id}
-                  onSelect={(currentValue) => {
-                    setValue(currentValue === value ? '' : currentValue)
+                  onSelect={(selectedId) => {
+                    const currentValue = options.find(
+                      (option) => option.id === selectedId
+                    )
+                    setValue(currentValue === value ? undefined : currentValue)
                     setOpen(false)
                   }}
                 >
                   <Check
                     className={cn(
                       'mr-2 h-4 w-4',
-                      value === option.id ? 'opacity-100' : 'opacity-0'
+                      value?.id === option.id ? 'opacity-100' : 'opacity-0'
                     )}
                   />
                   {option.name}
