@@ -1,6 +1,6 @@
 # Shadcn Creatable Combo
 
-[Open in stackblitz](https://stackblitz.com/github/remult/remult/tree/main/examples/shadcn-react-table)
+[Open in stackblitz](https://stackblitz.com/github/noam-honig/demo-shadcn-combo-with-create)
 
 To run this example:
 
